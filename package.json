@@ -1,0 +1,26 @@
+{
+  "name": "quarti",
+  "private": true,
+  "description": "Quarti: shift scheduling and staffing for small restaurants (Montréal pilot).",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "npm run test:rules && npm run test:db",
+    "test:rules": "npm run test --workspace @quarti/rules",
+    "test:db": "vitest run --config supabase/tests/vitest.config.ts",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test:e2e": "bash e2e/run.sh"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.0",
+    "pg": "^8.16.0",
+    "playwright": "1.56.0",
+    "typescript": "~6.0.3",
+    "vitest": "^3.2.0"
+  }
+}

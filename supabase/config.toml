@@ -1,0 +1,14 @@
+# Lets the Supabase CLI work in this folder (`supabase link`, `supabase db push`).
+# Everything not set here uses the CLI defaults; production settings live in the Supabase dashboard.
+project_id = "quarti"
+
+[db]
+major_version = 16
+
+[auth]
+site_url = "quarti://"
+additional_redirect_urls = ["quarti://"]
+
+[auth.email]
+enable_signup = true
+otp_length = 6
