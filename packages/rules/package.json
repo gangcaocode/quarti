@@ -1,0 +1,12 @@
+{
+  "name": "@quarti/rules",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Scheduling rules shared by the app (instant feedback). The database enforces the same rules.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  }
+}

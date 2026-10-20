@@ -32,3 +32,9 @@ supabase/tests/.pgdata/
 !.vscode/extensions.json
 .idea/
 coverage/
+
+# end-to-end run outputs
+e2e/.bin/
+e2e/.web/
+e2e/.shots/
+e2e/.*.log
