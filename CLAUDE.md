@@ -11,11 +11,12 @@ Shift scheduling for small Montréal restaurants. Solo founder; the pilot is Fre
 
 ## Architecture
 
-- **The server enforces every rule.** Writes go through `security definer` functions in `supabase/migrations/*_scheduling.sql`; direct table writes are revoked. Row-level security decides what each person can read. Workers never see pay rates of others or anyone's email (`crew_shifts`, `coworkers` views).
+- **The server enforces every rule.** Writes go through `security definer` functions in `supabase/migrations/*_scheduling.sql`; direct table writes are revoked. Row-level security decides what each person can read. Workers never see pay rates of others or anyone's email (`crew_shifts()`, `coworkers()` functions).
+- Helper checks (`is_manager`, `is_staff`, `my_staff_id`, `shop_today`) and internal functions (`need_manager`, `tell`, …) live in the `private` schema, which the API doesn't expose. Don't add views or helpers to `public`; Supabase's security check (`get_advisors`) should stay clean apart from the app's own RPC functions.
 - Functions fail with a short code (`raise exception 'double_booked'`). `packages/rules` lists the codes (`ERROR_CODES`), the app maps them to `errors.<code>` in `src/i18n`.
-- Times: shifts store `day` + `start_min`/`end_min` (end may pass 1440 for overnight); a trigger fills `starts_at`/`ends_at` in the shop's timezone. "Today" is always the shop's local day (`shop_today()`), and `app_now()` can be pinned in tests.
+- Times: shifts store `day` + `start_min`/`end_min` (end may pass 1440 for overnight); a trigger fills `starts_at`/`ends_at` in the shop's timezone. "Today" is always the shop's local day (`private.shop_today()`), and `app_now()` can be pinned in tests.
 - `packages/rules` holds pure logic shared by screens (overlaps, who can take a slot, labels). Keep it free of React and Supabase, and keep server and client rules in step.
-- Update bodies written by the server (`tell()`) are English for now; the app translates titles by `kind`.
+- Update bodies written by the server (`private.tell()`) are English for now; the app translates titles by `kind`.
 
 ## App (apps/mobile)
 
