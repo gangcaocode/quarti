@@ -22,8 +22,8 @@ You need Node 22 (`nvm use` reads `.nvmrc`) and a Supabase project.
 
 1. **Install:** `npm install`
 2. **Database:** with the [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started), run `supabase link --project-ref <your-project-ref>` and then `supabase db push`. Without the CLI, paste each file in `supabase/migrations/` into the SQL editor, in name order.
-3. **Sign-in by email code.** In the dashboard, open Authentication → Email Templates → **Magic link** (used for new and returning people), and make the body show the code, for example `Votre code Quarti / Your Quarti code: <strong>{{ .Token }}</strong>`. Without `{{ .Token }}` people get a link instead of a code. The app accepts codes of 6 to 10 digits; 6 is easiest to type (Authentication → Providers → Email → code length).
-4. **Email sending:** Supabase's built-in email only sends a few messages an hour. For the pilot, set up your own SMTP (Authentication → SMTP settings), for example Resend or Postmark.
+3. **Email sending (do this first).** Supabase only lets you edit email templates once custom SMTP is on (Authentication → Emails → SMTP Settings). For testing, Gmail works: host `smtp.gmail.com`, port 465, your Gmail as username, and a Gmail [app password](https://myaccount.google.com/apppasswords). Before the pilot, switch to your own domain with a provider such as Resend or Postmark.
+4. **Sign-in by email code.** In Authentication → Emails → Templates, put `{{ .Token }}` in both **Magic link or OTP** (returning people) and **Confirm sign up** (someone's very first sign-in); without it people get a link instead of a code. Set the code length to 6 in Authentication → Sign In / Providers → Email → Email OTP length (the app accepts 6 to 10 digits).
 5. **Keys:** copy `.env.example` to `apps/mobile/.env` and fill in the project URL and the **publishable** (anon) key from Project Settings → API. Never put the secret/service key in the app. `.env` files are ignored by git.
 
 ## Run it
