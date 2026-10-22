@@ -102,7 +102,7 @@ const en = {
     overnightNote: 'An end time before the start means the shift ends the next day.',
     badTime: 'Use times like 07:00 or 17:30.',
     bad_times: 'Use times like 07:00 or 17:30.',
-    too_short: 'A shift is at least 1 hour.',
+    too_short: 'A shift is at least 30 minutes.',
     too_long: 'A shift is at most 16 hours.',
     outside: 'Outside usual hours',
     extra: 'Extra',

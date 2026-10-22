@@ -104,7 +104,7 @@ const fr: Strings = {
     overnightNote: 'Une fin avant le début veut dire que le quart finit le lendemain.',
     badTime: 'Utilisez des heures comme 07:00 ou 17:30.',
     bad_times: 'Utilisez des heures comme 07:00 ou 17:30.',
-    too_short: "Un quart dure au moins 1 heure.",
+    too_short: "Un quart dure au moins 30 minutes.",
     too_long: 'Un quart dure au plus 16 heures.',
     outside: 'Hors des heures habituelles',
     extra: 'Extra',

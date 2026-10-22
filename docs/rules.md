@@ -487,7 +487,7 @@ Settled while building the first version of the real app. They complete the rule
 
 **Scheduling**
 - A day is empty until the manager taps "Start this day", which creates one open slot per person the usual staffing needs.
-- Extra shifts are 30 minutes to 16 hours. (Open question: the app's message says "at least 1 hour"; decide which is right.)
+- Extra shifts are 30 minutes to 16 hours (decided Oct 22; the server enforces it too).
 - Shifts given to someone are drafts. Nobody is told until the manager sends the week.
 
 **What workers are told**
