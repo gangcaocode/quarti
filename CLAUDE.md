@@ -5,6 +5,7 @@ Shift scheduling for small Montréal restaurants. Solo founder; the pilot is Fre
 ## Ground rules
 
 - `docs/rules.md` is the spec. When behaviour is unclear, it decides; if it's silent, ask before inventing a rule.
+- Check its "Build status" section before starting: it says what exists and what's spec only. When a pull request builds part of the spec, move that item in the same pull request, and add any new decision to "Decisions while building".
 - Work on a branch and open a pull request. Nothing lands on `main` without the owner's review.
 - Propose before changing anything the owner didn't ask for (review-type changes: say what and why first).
 - Supabase keys live in `apps/mobile/.env` (gitignored) or CI secrets — never in code, never the service key in the app.

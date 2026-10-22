@@ -4,6 +4,8 @@
 
 Agreed before building the worker app (Oct 2026). The worker app must follow these too.
 
+This file in the repo is the one true copy. **What's already built:** see "Build status" at the end. **Decisions made while building:** see "Decisions while building" just before it.
+
 ## Shifts
 - Every shift is its own record. Periods only organize the schedule. A shift belongs to the period it overlaps most.
 - A shift whose end is at or before its start runs past midnight. It is dated by the day it starts. A shift still running after midnight also appears, read-only, at the start of the next day's timeline.
@@ -462,3 +464,72 @@ Instead of separate owner and stand-in roles, there are only two actions: **shar
 - Full data for every Quarti shop in the switcher (the prototype has one).
 - Push notifications.
 - Creating "until stopped" series records week by week on the server.
+
+## Decisions while building (Oct 2026)
+Settled while building the first version of the real app. They complete the rules above; where they differ, these win.
+
+**Signing in**
+- Email code only, no passwords: the person enters their email, gets a 6-digit code, types it in. Codes expire after 1 hour.
+- No SMS for the pilot.
+- The code email is in French, then English. Supabase sends one email to returning people ("Magic link or OTP") and another on someone's very first sign-in ("Confirm sign up"); both show the code.
+- Email goes through Gmail while testing (Supabase caps it at 30 an hour). Switch to Quarti's own domain (Resend or Postmark) before real staff sign in.
+
+**Setting up a shop**
+- The first person to sign in creates a shop and manages it.
+- A new shop starts with positions Cashier, Cook and Server, and periods Lunch 11:00–15:00 and Dinner 17:00–22:00, with one of each position per period. Everything can be changed in Shop.
+- The free plan allows 2 service periods; the server refuses a 3rd.
+
+**Adding people**
+- Adding someone creates them on the roster right away (they can be scheduled before they join) and gives an invite code: 10 characters, no look-alike letters (no 0/O, 1/I/L). It can be typed with or without the dash.
+- A code works once, for that person only. Their email is optional; the same email can't be on the roster twice.
+- Labels: "Invited" until they join with the code, then "New", then nothing once active.
+- Pay is $15–60 an hour per position. The first position ticked is the main one unless another is chosen.
+
+**Scheduling**
+- A day is empty until the manager taps "Start this day", which creates one open slot per person the usual staffing needs.
+- Extra shifts are 30 minutes to 16 hours (decided Oct 22; the server enforces it too).
+- Shifts given to someone are drafts. Nobody is told until the manager sends the week.
+
+**What workers are told**
+- Told: a shift to confirm, a shift taken away after they were asked or had accepted, joining the team, positions and pay changed, set inactive or active, back from time away, removed from the team.
+- Not told: their own accept or decline (they see it on screen; the manager sees it on the schedule), and anything about a draft they never received.
+- The reason for setting someone inactive stays with the manager; the worker only sees "Set as inactive".
+- Workers see who else works a shift (name, position, times) for confirmed shifts only, never pay or emails.
+
+**Language**
+- The app follows the phone's language (French unless the phone is in English) until the person picks one; the choice is saved on their profile and follows them to other phones.
+- Some update texts written by the server (for example "· given to someone else") are still English inside the French app. The fix is the "events, not sentences" plan under Languages.
+
+## Build status
+Keep this up to date: each pull request that builds part of the spec moves it here from "Not built yet".
+
+**In the app now** (pull requests #1 and #2)
+- Sign-in by email code; create a shop or join one with an invite code (also as a `quarti://join/CODE` link).
+- Manager:
+  - **Today:** what needs you (open shifts today, declined, waiting for replies, open shifts coming up) and today's schedule.
+  - **Schedule:** a week at a time; preview of usual staffing; Start this day; add an extra shift; give a shift, take someone off, remove an extra; send the week.
+  - **Staff:** roster, add someone with positions and pay, share the invite code.
+  - **Person page:** positions and pay; set inactive (reason, return date, free their upcoming shifts) or active; remove from the team.
+  - **Shop:** name and address, positions, service periods and usual staffing, language, switch to the worker app, switch shops.
+- Worker: **Home** (shifts to answer with Accept / Decline, coming up, updates), **My shifts** (with who else works), **Me** (language, switch to the manager app, shops, sign out).
+- Rules enforced by the server: nobody booked twice; started shifts never change; inactive people can't get shifts, and can again from their return date (the roster flips them back to active the first time someone tries to give them a shift, not at midnight); covering pays the main rate; booked shifts keep their rate; removing a position keeps booked shifts as covering; declining reopens the slot ("Declined by …"); every action re-checks access.
+- French and English throughout the app.
+
+**In the database, no screens yet**
+- Sharing access and stand-ins with an end date (Plan and access). The access table and its checks exist and are tested.
+- Free / Pro plan per shop (no payment yet).
+
+**Not built yet** (spec only). The order is a suggestion; the owner decides.
+1. Server messages in French ("events, not sentences" under Languages).
+2. Push notifications.
+3. Offers and claims, and the Open shifts setting.
+4. Attendance (worked hours, no-shows) and clock in and out.
+5. Copying schedules; recurring shifts.
+6. Worker shift actions: can't make it, running late, ask to drop, ask to change times, give away and trade.
+7. Leave requests and the leave planner; blackout days; holidays by region; the month calendar.
+8. Availability, student seasons and exams, "I want more hours", covering a shift yourself, the shortage warning.
+9. Hiring posts and applicants, skills, referrals and the window sign.
+10. Chat (manager, team, coworkers; block and report).
+11. Tip sharing.
+12. Plan and access screens, payment, transfer, owner mode.
+13. Worker calendar, other jobs, the calendar subscription link, Find shops.
