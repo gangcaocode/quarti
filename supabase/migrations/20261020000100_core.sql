@@ -2,8 +2,10 @@
 -- Spec: docs/rules.md. Every rule that matters is enforced here, not only in the app:
 -- a phone can show a screen the person no longer has rights to (see "Every tap re-checks access").
 
-create extension if not exists pgcrypto;
-create extension if not exists btree_gist;
+-- extensions go in their own schema, as on Supabase (where pgcrypto already lives in `extensions`)
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+create extension if not exists btree_gist with schema extensions;
 
 -- ── time ──
 -- app_now(): the current time. Tests pin it with `set app.now = '…'`; production never sets it.
@@ -133,9 +135,9 @@ create table public.staff_positions (
 
 -- invite codes people can type: 10 characters, no look-alikes (0/O, 1/I/L)
 create or replace function public.invite_code() returns text
-language sql volatile as $$
+language sql volatile set search_path = public as $$
   select string_agg(substr('ABCDEFGHJKMNPQRSTUVWXYZ23456789', 1 + (get_byte(b, i) % 31), 1), '' order by i)
-  from (select gen_random_bytes(10) as b) x, generate_series(0, 9) i
+  from (select extensions.gen_random_bytes(10) as b) x, generate_series(0, 9) i
 $$;
 
 create table public.invites (

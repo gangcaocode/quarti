@@ -51,7 +51,7 @@ export async function loadMyShifts(shop: string, from: Day): Promise<Shift[]> {
   return must(await supabase.from('shifts').select(SHIFT_COLS).eq('shop_id', shop).eq('status', 'active').gte('day', from).order('starts_at').limit(60)).map(toShift);
 }
 export async function loadCrew(shop: string, day: Day): Promise<{ id: string; staff_id: string; full_name: string; start_min: number; end_min: number; position_id: string }[]> {
-  return must(await supabase.from('crew_shifts').select('id, staff_id, full_name, start_min, end_min, position_id').eq('shop_id', shop).eq('day', day).order('start_min'));
+  return must(await supabase.rpc('crew_shifts', { p_shop: shop, p_day: day }));
 }
 export async function loadUpdates(staff: string): Promise<Update[]> {
   return must(await supabase.from('updates').select('id, kind, title, body, created_at, seen_at').eq('staff_id', staff).order('id', { ascending: false }).limit(30));
