@@ -138,6 +138,21 @@ describe('managers', () => {
     });
   });
 
+  test("the Shop screen's edits work, but nothing moves to another shop (a moved period got around the free plan)", async () => {
+    await tx(async (t) => {
+      const s = await makeShop(t);
+      await t.q(`update public.shops set name = 'Olympico', address = '1 Rue Bernard' where id = $1`, [s.shop]);
+      await t.q(`update public.positions set name = 'Caisse' where id = $1`, [s.cashier]);
+      await t.q(`update public.periods set name = 'Brunch', start_min = 480, end_min = 720 where id = $1`, [s.morning]);
+      const other = (await t.one(`select public.create_shop('Olympico Mile End') as id`)).id;   // her second shop, also free
+      const late = (await t.one(`insert into public.periods (shop_id, name, start_min, end_min) values ($1, 'Late', 1080, 1380) returning id`, [other])).id;
+      await t.fails(`update public.periods set shop_id = $1 where id = $2`, [s.shop, late], 'permission denied');
+      await t.fails(`update public.positions set shop_id = $1 where id = $2`, [other, s.barista], 'permission denied');
+      await t.fails(`update public.shops set created_by = $2 where id = $1`, [s.shop, U.zoe], 'permission denied');
+      expect((await t.one(`select count(*)::int as n from public.periods where shop_id = $1 and archived_at is null`, [s.shop])).n).toBe(2);
+    });
+  });
+
   test('anonymous requests get nothing', async () => {
     await tx(async (t) => {
       await makeShop(t);

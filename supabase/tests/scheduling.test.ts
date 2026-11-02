@@ -30,6 +30,29 @@ describe('planning a day', () => {
     });
   });
 
+  test("the time zone must be a real one; in a new one, shifts that haven't started keep their clock times", async () => {
+    await tx(async (t) => {
+      const s = await makeShop(t);
+      await t.fails(`update public.shops set timezone = 'Not/AZone' where id = $1`, [s.shop], 'bad_input');
+      await t.at('2026-09-25T08:00:00-04:00');
+      const started = (await t.one(`select public.add_slot($1, '2026-09-25', $2, 540, 1020) as id`, [s.shop, s.cook])).id;   // today 09:00–17:00
+      await t.q(`select public.assign_shift($1, $2)`, [started, s.staff.kevin]);
+      await t.at('2026-09-25T09:41:00-04:00');
+      const a = (await t.one(`select public.add_slot($1, $2, $3, 600, 720) as id`, [s.shop, DAY, s.cook])).id;   // back to back: 10:00–12:00
+      const b = (await t.one(`select public.add_slot($1, $2, $3, 720, 840) as id`, [s.shop, DAY, s.cook])).id;   //               12:00–14:00
+      await t.q(`select public.assign_shift($1, $2)`, [a, s.staff.kevin]);
+      await t.q(`select public.assign_shift($1, $2)`, [b, s.staff.kevin]);
+      const at = async (id: string) => (await t.one(`select starts_at from public.shifts where id = $1`, [id])).starts_at.toISOString();
+
+      await t.q(`update public.shops set timezone = 'America/Vancouver' where id = $1`, [s.shop]);   // 3 hours later: no overlap on the way
+      expect([await at(a), await at(b)]).toEqual(['2026-10-02T17:00:00.000Z', '2026-10-02T19:00:00.000Z']);   // 10:00 and 12:00 PDT
+      expect(await at(started)).toBe('2026-09-25T13:00:00.000Z');                                           // still 09:00 EDT
+
+      await t.q(`update public.shops set timezone = 'America/Toronto' where id = $1`, [s.shop]);     // and back, 3 hours earlier
+      expect([await at(a), await at(b)]).toEqual(['2026-10-02T14:00:00.000Z', '2026-10-02T16:00:00.000Z']);
+    });
+  });
+
   test("an extra slot can't start in the past, and only open slots that haven't started can be removed", async () => {
     await tx(async (t) => {
       const s = await makeShop(t);

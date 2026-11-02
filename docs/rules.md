@@ -478,6 +478,8 @@ Settled while building the first version of the real app. They complete the rule
 - The first person to sign in creates a shop and manages it.
 - A new shop starts with positions Cashier, Cook and Server, and periods Lunch 11:00–15:00 and Dinner 17:00–22:00, with one of each position per period. Everything can be changed in Shop.
 - The free plan allows 2 service periods; the server refuses a 3rd.
+- Positions and periods belong to their shop for good; they can't be moved to another shop (decided Nov 1; the server enforces it).
+- The shop's time zone must be a real one. If it changes, shifts that haven't started keep their clock times (17:00 stays 17:00); started shifts don't move (decided Nov 1). No screen changes it yet.
 
 **Adding people**
 - Adding someone creates them on the roster right away (they can be scheduled before they join) and gives an invite code: 10 characters, no look-alike letters (no 0/O, 1/I/L). It can be typed with or without the dash.
@@ -512,7 +514,7 @@ Keep this up to date: each pull request that builds part of the spec moves it he
   - **Person page:** positions and pay; set inactive (reason, return date, free their upcoming shifts) or active; remove from the team.
   - **Shop:** name and address, positions, service periods and usual staffing, language, switch to the worker app, switch shops.
 - Worker: **Home** (shifts to answer with Accept / Decline, coming up, updates), **My shifts** (with who else works), **Me** (language, switch to the manager app, shops, sign out).
-- Rules enforced by the server: nobody booked twice; started shifts never change; inactive people can't get shifts, and can again from their return date (the roster flips them back to active the first time someone tries to give them a shift, not at midnight); covering pays the main rate; booked shifts keep their rate; removing a position keeps booked shifts as covering; declining reopens the slot ("Declined by …"); every action re-checks access.
+- Rules enforced by the server: nobody booked twice; started shifts never change; inactive people can't get shifts, and can again from their return date (the roster flips them back to active the first time someone tries to give them a shift, not at midnight); covering pays the main rate; booked shifts keep their rate; removing a position keeps booked shifts as covering; the free plan's 2 periods; positions and periods stay in their shop; declining reopens the slot ("Declined by …"); every action re-checks access.
 - French and English throughout the app.
 
 **In the database, no screens yet**
