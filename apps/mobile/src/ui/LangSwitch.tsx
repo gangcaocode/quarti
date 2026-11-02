@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { setLanguage } from '../i18n';
+import { LANGUAGES, setLanguage } from '../i18n';
 import { Chip, Row, T } from './kit';
 
 export function LangSwitch() {
@@ -8,8 +8,7 @@ export function LangSwitch() {
     <>
       <T v="label">{t('me.language')}</T>
       <Row style={{ marginTop: 6 }}>
-        <Chip label="Français" on={i18n.language === 'fr'} onPress={() => setLanguage('fr', true)} />
-        <Chip label="English" on={i18n.language === 'en'} onPress={() => setLanguage('en', true)} />
+        {LANGUAGES.map((l) => <Chip key={l.code} label={l.name} on={i18n.language === l.code} onPress={() => setLanguage(l.code, true)} />)}
       </Row>
     </>
   );

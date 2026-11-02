@@ -1,25 +1,25 @@
-// French and English. Starts in the phone's language (French unless it's English), then follows the profile.
+// The app's languages (see languages.ts). Starts in the phone's language when the app has it (French otherwise),
+// then follows the profile.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
 import i18n, { type TFunction } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { ApiError } from '../lib/api';
 import { supabase } from '../lib/supabase';
-import en from './en';
-import fr from './fr';
+import { DEFAULT_LANG, isLang, LANGUAGES, type Lang } from './languages';
 
-export type Lang = 'fr' | 'en';
+export { LANGUAGES, type Lang } from './languages';
 const KEY = 'quarti.lang';
-const device: Lang = getLocales()[0]?.languageCode === 'en' ? 'en' : 'fr';
+const device: Lang = getLocales().map((l) => l.languageCode).find(isLang) ?? DEFAULT_LANG;
 
 i18n.use(initReactI18next).init({
-  resources: { en: { translation: en }, fr: { translation: fr } },
+  resources: Object.fromEntries(LANGUAGES.map((l) => [l.code, { translation: l.strings }])),
   lng: device,
-  fallbackLng: 'fr',
+  fallbackLng: DEFAULT_LANG,
   interpolation: { escapeValue: false },
   returnNull: false,
 });
-AsyncStorage.getItem(KEY).then((l) => { if ((l === 'fr' || l === 'en') && l !== i18n.language) i18n.changeLanguage(l); }).catch(() => {});
+AsyncStorage.getItem(KEY).then((l) => { if (isLang(l) && l !== i18n.language) i18n.changeLanguage(l); }).catch(() => {});
 
 /** switch language; with persist, also save it on this phone and on the profile (so updates and emails follow) */
 export async function setLanguage(lang: Lang, persist = false) {

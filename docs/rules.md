@@ -497,8 +497,9 @@ Settled while building the first version of the real app. They complete the rule
 - Workers see who else works a shift (name, position, times) for confirmed shifts only, never pay or emails.
 
 **Language**
-- The app follows the phone's language (French unless the phone is in English) until the person picks one; the choice is saved on their profile and follows them to other phones.
-- Some update texts written by the server (for example "· given to someone else") are still English inside the French app. The fix is the "events, not sentences" plan under Languages.
+- The app speaks French, English and Simplified Chinese (decided Nov 2; the Chinese is an AI draft that needs a native speaker's review before real staff use it). More can follow: each language is one strings file plus one line in `apps/mobile/src/i18n/languages.ts`.
+- The app follows the phone's language (French when the phone's language isn't one the app has) until the person picks one; the choice is saved on their profile and follows them to other phones.
+- Updates to workers are stored as events: a kind plus details (the shift's day and times, and why it was taken away: given to someone else, removed from the schedule, set inactive, removed from the team). The app writes them out in the reader's language. The server keeps an English copy only for older app versions.
 
 ## Build status
 Keep this up to date: each pull request that builds part of the spec moves it here from "Not built yet".
@@ -513,23 +514,22 @@ Keep this up to date: each pull request that builds part of the spec moves it he
   - **Shop:** name and address, positions, service periods and usual staffing, language, switch to the worker app, switch shops.
 - Worker: **Home** (shifts to answer with Accept / Decline, coming up, updates), **My shifts** (with who else works), **Me** (language, switch to the manager app, shops, sign out).
 - Rules enforced by the server: nobody booked twice; started shifts never change; inactive people can't get shifts, and can again from their return date (the roster flips them back to active the first time someone tries to give them a shift, not at midnight); covering pays the main rate; booked shifts keep their rate; removing a position keeps booked shifts as covering; declining reopens the slot ("Declined by …"); every action re-checks access.
-- French and English throughout the app.
+- French, English and Simplified Chinese throughout the app, including updates to workers (events, written out in each reader's language).
 
 **In the database, no screens yet**
 - Sharing access and stand-ins with an end date (Plan and access). The access table and its checks exist and are tested.
 - Free / Pro plan per shop (no payment yet).
 
 **Not built yet** (spec only). The order is a suggestion; the owner decides.
-1. Server messages in French ("events, not sentences" under Languages).
-2. Push notifications.
-3. Offers and claims, and the Open shifts setting.
-4. Attendance (worked hours, no-shows) and clock in and out.
-5. Copying schedules; recurring shifts.
-6. Worker shift actions: can't make it, running late, ask to drop, ask to change times, give away and trade.
-7. Leave requests and the leave planner; blackout days; holidays by region; the month calendar.
-8. Availability, student seasons and exams, "I want more hours", covering a shift yourself, the shortage warning.
-9. Hiring posts and applicants, skills, referrals and the window sign.
-10. Chat (manager, team, coworkers; block and report).
-11. Tip sharing.
-12. Plan and access screens, payment, transfer, owner mode.
-13. Worker calendar, other jobs, the calendar subscription link, Find shops.
+1. Push notifications.
+2. Offers and claims, and the Open shifts setting.
+3. Attendance (worked hours, no-shows) and clock in and out.
+4. Copying schedules; recurring shifts.
+5. Worker shift actions: can't make it, running late, ask to drop, ask to change times, give away and trade.
+6. Leave requests and the leave planner; blackout days; holidays by region; the month calendar.
+7. Availability, student seasons and exams, "I want more hours", covering a shift yourself, the shortage warning.
+8. Hiring posts and applicants, skills, referrals and the window sign.
+9. Chat (manager, team, coworkers; block and report).
+10. Tip sharing.
+11. Plan and access screens, payment, transfer, owner mode.
+12. Worker calendar, other jobs, the calendar subscription link, Find shops.

@@ -1,6 +1,7 @@
 // Dates are always the shop's dates (America/Toronto for the pilot), whatever the phone's time zone.
 import { addDays, type Day } from '@quarti/rules';
 import i18n from '../i18n';
+import { localeOf } from '../i18n/languages';
 
 export function todayIn(tz: string, now = new Date()): Day {
   // en-CA formats as YYYY-MM-DD
@@ -12,7 +13,7 @@ export function nowMinIn(tz: string, now = new Date()): number {
   const h = Number(p.find((x) => x.type === 'hour')?.value ?? 0), m = Number(p.find((x) => x.type === 'minute')?.value ?? 0);
   return h * 60 + m;
 }
-const loc = () => (i18n.language === 'fr' ? 'fr-CA' : 'en-CA');
+const loc = () => localeOf(i18n.language);
 const asDate = (d: Day) => new Date(d + 'T12:00:00Z');
 /** "Fri Oct 2" / "ven. 2 oct." */
 export function dayLabel(d: Day): string { return asDate(d).toLocaleDateString(loc(), { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }

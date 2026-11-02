@@ -17,7 +17,9 @@ test('migrations apply and a shop can be built through the app functions', async
     expect(await t.one(`select lang from public.profiles`)).toEqual({ lang: null });
     await t.q(`update public.profiles set lang = 'en'`);
     expect(await t.one(`select lang from public.profiles`)).toEqual({ lang: 'en' });
-    await t.fails(`update public.profiles set lang = 'es'`, [], 'profiles_lang_check');
+    // any language code the app ships: the server never writes text in it
+    for (const code of ['zh', 'zh-Hant', 'fr']) await t.q(`update public.profiles set lang = $1`, [code]);
+    await t.fails(`update public.profiles set lang = 'Français'`, [], 'profiles_lang_check');
   });
 });
 
