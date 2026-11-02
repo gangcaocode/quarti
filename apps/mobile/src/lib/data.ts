@@ -7,7 +7,8 @@ export type Staffing = { period_id: string; position_id: string; n: number };
 export type Setup = { positions: Position[]; periods: Period[]; staffing: Staffing[] };
 export type StaffRow = StaffMember & { email: string | null; joined: boolean; inactiveReason: string | null };
 export type Shift = Slot & { rateCents: number; cover: boolean; extra: boolean; reason: string; startsAt: string };
-export type Update = { id: number; kind: string; title: string; body: string; created_at: string; seen_at: string | null };
+/** an event for one worker: kind + details, written out in the reader's language by updateText (title/body: English copy) */
+export type Update = { id: number; kind: string; title: string; body: string; details: Record<string, unknown>; created_at: string; seen_at: string | null };
 
 function must<T>(r: { data: T | null; error: { message: string } | null }): T {
   if (r.error) throw new Error(r.error.message);
@@ -54,7 +55,7 @@ export async function loadCrew(shop: string, day: Day): Promise<{ id: string; st
   return must(await supabase.rpc('crew_shifts', { p_shop: shop, p_day: day }));
 }
 export async function loadUpdates(staff: string): Promise<Update[]> {
-  return must(await supabase.from('updates').select('id, kind, title, body, created_at, seen_at').eq('staff_id', staff).order('id', { ascending: false }).limit(30));
+  return must(await supabase.from('updates').select('id, kind, title, body, details, created_at, seen_at').eq('staff_id', staff).order('id', { ascending: false }).limit(30));
 }
 export async function markSeen(staff: string) {
   await supabase.from('updates').update({ seen_at: new Date().toISOString() }).eq('staff_id', staff).is('seen_at', null);

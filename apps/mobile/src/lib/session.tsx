@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Session } from '@supabase/supabase-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import i18n, { setLanguage } from '../i18n';
+import { DEFAULT_LANG, isLang } from '../i18n/languages';
 import { api, type MyShop } from './api';
 import { supabase } from './supabase';
 
@@ -58,8 +59,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     load().catch(() => setShops([]));
     // a language picked earlier (on any phone) wins; a new profile takes the language the app is showing now
     supabase.from('profiles').select('lang').single().then(({ data }) => {
-      if (data?.lang === 'fr' || data?.lang === 'en') { if (data.lang !== i18n.language) setLanguage(data.lang); }
-      else if (data) setLanguage(i18n.language === 'en' ? 'en' : 'fr', true);
+      if (isLang(data?.lang)) { if (data.lang !== i18n.language) setLanguage(data.lang); }
+      else if (data && !data.lang) setLanguage(isLang(i18n.language) ? i18n.language : DEFAULT_LANG, true);
     });
   }, [session, load]);
 

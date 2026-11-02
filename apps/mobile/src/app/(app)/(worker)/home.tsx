@@ -8,6 +8,7 @@ import { api } from '../../../lib/api';
 import { loadMyShifts, loadSetup, loadUpdates, markSeen, type Shift } from '../../../lib/data';
 import { dayLabel, todayIn } from '../../../lib/dates';
 import { useShop } from '../../../lib/session';
+import { updateText } from '../../../lib/updates';
 import { supabase } from '../../../lib/supabase';
 import { useLoad } from '../../../lib/useLoad';
 import { Badge, Button, Card, Empty, Loading, Notice, Row, Screen, Section, T } from '../../../ui/kit';
@@ -61,9 +62,9 @@ export default function Home() {
         </Card>
       )) : <Empty icon="calendar-clear-outline" text={t('worker.nothingNext')} />}
       <Section title={t('worker.updates')} right={data.unseen ? <Badge label={t('worker.new', { count: data.unseen })} tone="blue" /> : null} />
-      {data.updates.length ? data.updates.slice(0, 10).map((u) => (
-        <Card key={u.id} tone={!u.seen_at ? 'info' : undefined}><T v="strong">{t(`updates.${u.kind}`, { defaultValue: u.title })}</T>{u.body ? <T v="small">{u.body}</T> : null}</Card>
-      )) : <T v="small">{t('worker.noUpdates')}</T>}
+      {data.updates.length ? data.updates.slice(0, 10).map((u) => { const x = updateText(t, u); return (
+        <Card key={u.id} tone={!u.seen_at ? 'info' : undefined}><T v="strong">{x.title}</T>{x.body ? <T v="small">{x.body}</T> : null}</Card>
+      ); }) :<T v="small">{t('worker.noUpdates')}</T>}
     </Screen>
   );
 }

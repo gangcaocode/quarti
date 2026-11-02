@@ -17,7 +17,7 @@ Shift scheduling for small Montréal restaurants. Solo founder; the pilot is Fre
 - Functions fail with a short code (`raise exception 'double_booked'`). `packages/rules` lists the codes (`ERROR_CODES`), the app maps them to `errors.<code>` in `src/i18n`.
 - Times: shifts store `day` + `start_min`/`end_min` (end may pass 1440 for overnight); a trigger fills `starts_at`/`ends_at` in the shop's timezone. "Today" is always the shop's local day (`private.shop_today()`), and `app_now()` can be pinned in tests.
 - `packages/rules` holds pure logic shared by screens (overlaps, who can take a slot, labels). Keep it free of React and Supabase, and keep server and client rules in step.
-- Update bodies written by the server (`private.tell()`) are English for now; the app translates titles by `kind`.
+- Updates are events: `private.tell()` stores a `kind` plus `details` (jsonb; the shift's day and times are added from the shift), and the app writes them out in the reader's language (`src/lib/updates.ts`). Never put language-specific text in `details`; `title`/`body` are an English copy for older app versions only.
 
 ## App (apps/mobile)
 
@@ -25,7 +25,7 @@ Shift scheduling for small Montréal restaurants. Solo founder; the pilot is Fre
 - `src/lib/session.tsx`: signed-in session, the person's shops, the current shop and mode (manager / worker). `shops` and `shop` must change together (screens treat "shops loaded, no shop" as "go to Welcome").
 - `src/lib/api.ts`: one wrapper per database function. `src/lib/data.ts`: reads.
 - `src/ui/kit.tsx`: the small component kit (colors from the prototype in `theme.ts`).
-- Every string goes in `src/i18n/en.ts` and `fr.ts` (TypeScript makes them match). Plurals use `_one` / `_other`.
+- Every string goes in every language file in `src/i18n` (`en.ts`, `fr.ts`, `zh.ts`; TypeScript makes them match). The languages are listed once, in `src/i18n/languages.ts`: a new language is a new strings file plus one line there. Plurals use `_one` / `_other` (Chinese uses only `_other`, but keep both keys).
 - In this cloud sandbox `npx expo install` can't reach Expo's API: take versions from `node_modules/expo/bundledNativeModules.json` and install with npm.
 
 ## Commands

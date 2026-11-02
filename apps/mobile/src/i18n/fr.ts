@@ -236,5 +236,12 @@ const fr: Strings = {
     back: 'De retour de congé',
     removed: "Retiré·e de l'équipe",
   },
+  updateWhy: {
+    given_away: "Donné à quelqu'un d'autre",
+    unassigned: "Retiré de l'horaire",
+    inactive: 'Vous avez été mis·e inactif·ve',
+    removed: "Retiré·e de l'équipe",
+  },
+  updateBody: { back: 'On peut de nouveau vous offrir des quarts.' },
 };
 export default fr;

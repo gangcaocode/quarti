@@ -1,4 +1,4 @@
-// English strings. fr.ts must have exactly the same keys (TypeScript checks it).
+// English strings. Every other language file must have exactly the same keys (TypeScript checks it).
 const en = {
   common: { back: 'Back', continue: 'Continue', retry: 'Try again', done: 'Done', cancel: 'Cancel', save: 'Save', add: 'Add' },
   errors: {
@@ -234,6 +234,14 @@ const en = {
     back: 'Back from time away',
     removed: 'Removed from the team',
   },
+  // why a shift was taken away (an update's details.why)
+  updateWhy: {
+    given_away: 'Given to someone else',
+    unassigned: 'Removed from the schedule',
+    inactive: 'You were set as inactive',
+    removed: 'Removed from the team',
+  },
+  updateBody: { back: 'You can be offered shifts again.' },
 };
 
 type Shape<T> = { [K in keyof T]: T[K] extends string ? string : Shape<T[K]> };

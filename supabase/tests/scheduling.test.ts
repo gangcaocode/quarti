@@ -111,6 +111,25 @@ describe('assigning and sending', () => {
     });
   });
 
+  test('updates are events the app writes in each reader\'s language: the shift\'s day and times, and why', async () => {
+    await tx(async (t) => {
+      const s = await makeShop(t);
+      const a = await slot(t, s, DAY, s.cashier, s.morning), b = await slot(t, s, DAY, s.cook, s.morning);
+      await t.q(`select public.assign_shift($1, $2)`, [a, s.staff.sophie]);
+      await t.q(`select public.assign_shift($1, $2)`, [b, s.staff.kevin]);
+      await t.q(`select public.send_shifts($1, $2, $2)`, [s.shop, DAY]);
+      await t.q(`select public.unassign_shift($1)`, [a]);
+      await t.q(`select public.assign_shift($1, $2)`, [b, s.staff.remi]);
+      await t.q(`select public.send_shifts($1, $2, $2)`, [s.shop, DAY]);
+      await t.q(`select public.remove_staff($1)`, [s.staff.remi]);
+      const details = async (staff: string) => (await t.admin(`select kind, details from public.updates where staff_id = $1 order by id`, [staff])).map((x: any) => [x.kind, x.details]);
+      const shift = { day: DAY, start_min: 420, end_min: 720 };
+      expect(await details(s.staff.sophie)).toEqual([['joined', {}], ['asked', shift], ['cancelled', { ...shift, why: 'unassigned' }]]);
+      expect((await details(s.staff.kevin)).at(-1)).toEqual(['cancelled', { ...shift, why: 'given_away' }]);
+      expect(await details(s.staff.remi)).toEqual([['joined', {}], ['asked', shift], ['cancelled', { ...shift, why: 'removed' }], ['removed', {}]]);
+    });
+  });
+
   test('started shifts are never touched', async () => {
     await tx(async (t) => {
       const s = await makeShop(t);
@@ -140,6 +159,7 @@ describe('staff', () => {
       expect((await t.one(`select staff_id from public.shifts where id = $1`, [a])).staff_id).toBeNull();
       expect((await updates(t, s.staff.kevin)).slice(-2).map((x: any) => x.title)).toEqual(['Shift cancelled', 'Set as inactive']);
       expect((await updates(t, s.staff.kevin)).at(-1).body).toBe('');   // the reason ('Exams') stays with the manager
+      expect((await t.admin(`select details from public.updates where staff_id = $1 and kind = 'cancelled'`, [s.staff.kevin]))[0].details.why).toBe('inactive');
       expect((await t.admin(`select inactive_reason from public.staff where id = $1`, [s.staff.kevin]))[0].inactive_reason).toBe('Exams');
       await t.fails(`select public.assign_shift($1, $2)`, [a, s.staff.kevin], 'inactive');
     });
